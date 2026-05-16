@@ -1,0 +1,252 @@
+<!--
+  <div class="toast">
+    <span class="toast-icon">📦</span>
+    <span class="toast-text">A <strong>suspicious package</strong> is heading someone's way...</span>
+  </div>
+-->
+
+<header class="top-bar">
+  <div class="bureau-title">
+    <div class="bureau-icon">✉</div>
+    <div>
+      <div class="bureau-name">Mail Verification Bureau</div>
+      <div class="bureau-subtitle">Postal Inspector Training Division</div>
+    </div>
+  </div>
+  <div class="match-timer">
+    <span>Match Time</span> 3:42
+  </div>
+</header>
+
+<main class="game-layout">
+  
+<!-- COLUMN 1: CARD -->
+  <section class="inspection-area">
+    <div class="player-score-bar">
+      <div class="player-identity">
+        <div class="player-avatar">MK</div>
+        <div>
+          <div class="player-name">Inspector Kowalski</div>
+          <div class="player-role">Senior Postal Officer</div>
+        </div>
+      </div>
+      <div class="score-display">
+        <span class="score-label">Score</span>
+        <span class="score-value">14</span>
+        <span class="score-unit">pts</span>
+      </div>
+    </div>
+
+    <div class="card-timer-section">
+      <span class="card-timer-label">Time remaining</span>
+      <div class="card-timer-track">
+        <div class="card-timer-fill"></div>
+      </div>
+      <span class="card-timer-seconds">7s</span>
+    </div>
+
+    <div class="package-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-title">Package Inspection Form</div>
+          <div class="card-id">PKG-2026-07-00842</div>
+        </div>
+        <div class="card-stamp">
+          <span class="card-stamp-text">Postage</span>
+          <span class="card-stamp-value">€4.50</span>
+          <span class="card-stamp-text">Paid</span>
+        </div>
+      </div>
+
+      <div class="package-fields">
+        <div class="field">
+          <div class="field-label">Package Type</div>
+          <div class="field-value type-badge">
+            Fragile <span class="badge badge-fragile">Fragile</span>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-label">Weight</div>
+          <div class="field-value">1,250g</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Destination</div>
+          <div class="field-value">International</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Shipping Class</div>
+          <div class="field-value">Express</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Declared Value</div>
+          <div class="field-value">€85.00</div>
+        </div>
+        <div class="field">
+          <div class="field-label">Destination Country</div>
+          <div class="field-value">Japan</div>
+        </div>
+      </div>
+
+      <div class="package-checks">
+        <span class="check-tag has"><span class="check-dot"></span> Customs Form</span>
+        <span class="check-tag has"><span class="check-dot"></span> Insurance</span>
+        <span class="check-tag has"><span class="check-dot"></span> Fragile Sticker</span>
+      </div>
+
+      <div class="card-actions">
+        <button phx-click="decline" class="btn btn-decline">
+          <span class="btn-icon">✕</span> Decline
+        </button>
+        <button phx-click="approve" class="btn btn-approve">
+          <span class="btn-icon">✓</span> Approve
+        </button>
+      </div>
+      
+<!--
+        <div class="result-reveal correct">
+          <div class="result-icon">✓</div>
+          <div class="result-text">
+            <div class="result-title">Correct — Package was legitimate</div>
+            <div class="result-detail">All postal regulations satisfied. +1 point.</div>
+          </div>
+        </div>
+        -->
+        <!--
+        <div class="result-reveal incorrect">
+          <div class="result-icon">✕</div>
+          <div class="result-text">
+            <div class="result-title">Incorrect — Package was fraudulent</div>
+            <div class="result-detail">Fragile packages cannot use standard shipping class. −1 point.</div>
+            <div class="result-saboteur">📦 Sent by Inspector Delgado</div>
+          </div>
+        </div>
+        -->
+    </div>
+  </section>
+  
+<!-- COLUMN 2: RULES -->
+  <div class="rules-reference">
+    <div class="rules-header">
+      <span class="rules-title">Postal Regulations</span>
+    </div>
+    <div class="rules-list">
+      <div class="rule-item">
+        <span class="rule-number">01</span><span>Letters must weigh under 500g</span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-number">02</span><span>International packages require a customs form</span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-number">03</span><span>Fragile packages cannot use standard shipping</span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-number">04</span><span>Parcels over 5,000g must use priority shipping</span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-number">05</span><span>Declared value over €100 requires insurance</span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-number">06</span><span>Fragile packages must have a fragile sticker</span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-number">07</span><span>EU and international must use express or priority</span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-number">08</span><span>Letters cannot have insurance</span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-number">09</span><span>Standard shipping: domestic only, under 2,000g</span>
+      </div>
+      <div class="rule-item">
+        <span class="rule-number">10</span><span>Fragile international over 1,000g must use priority</span>
+      </div>
+    </div>
+  </div>
+  
+<!-- COLUMN 3: LEADERBOARD -->
+  <div class="leaderboard">
+    <div class="leaderboard-header">
+      <div class="leaderboard-title">Inspector Rankings</div>
+    </div>
+    <ul class="leaderboard-list">
+      <li class="leaderboard-item">
+        <span class="rank rank-1">1</span>
+        <div class="lb-player-info">
+          <div class="lb-player-name">Inspector Tanaka</div>
+          <div class="lb-activity">
+            <span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot hot"></span><span class="lb-activity-dot hot"></span>
+          </div>
+        </div>
+        <button class="btn-sabotage">Sabotage <span class="sabotage-cost">−1 pt</span></button>
+      </li>
+      <li class="leaderboard-item is-you">
+        <span class="rank rank-2">2</span>
+        <div class="lb-player-info">
+          <div class="lb-player-name">Inspector Kowalski <span class="you-tag">(you)</span></div>
+          <div class="lb-activity">
+            <span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span>
+          </div>
+        </div>
+      </li>
+      <li class="leaderboard-item">
+        <span class="rank rank-3">3</span>
+        <div class="lb-player-info">
+          <div class="lb-player-name">Inspector Delgado</div>
+          <div class="lb-activity">
+            <span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span>
+          </div>
+        </div>
+        <button class="btn-sabotage sent">Sent ✓</button>
+      </li>
+      <li class="leaderboard-item">
+        <span class="rank">4</span>
+        <div class="lb-player-info">
+          <div class="lb-player-name">Inspector Moreau</div>
+          <div class="lb-activity">
+            <span class="lb-activity-dot active"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span>
+          </div>
+        </div>
+        <button class="btn-sabotage">Sabotage <span class="sabotage-cost">−1 pt</span></button>
+      </li>
+      <li class="leaderboard-item">
+        <span class="rank">5</span>
+        <div class="lb-player-info">
+          <div class="lb-player-name">Inspector Chen</div>
+          <div class="lb-activity">
+            <span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot"></span>
+          </div>
+        </div>
+        <button class="btn-sabotage">Sabotage <span class="sabotage-cost">−1 pt</span></button>
+      </li>
+      <li class="leaderboard-item">
+        <span class="rank">6</span>
+        <div class="lb-player-info">
+          <div class="lb-player-name">Inspector Okafor</div>
+          <div class="lb-activity">
+            <span class="lb-activity-dot"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span>
+          </div>
+        </div>
+        <button class="btn-sabotage">Sabotage <span class="sabotage-cost">−1 pt</span></button>
+      </li>
+    </ul>
+  </div>
+</main>
+
+<!--
+  <div class="match-end-overlay" style="display:flex">
+    <div class="match-end-card">
+      <div class="match-end-label">Match Complete</div>
+      <div class="match-end-title">Final Results</div>
+      <ul class="match-end-scores">
+        <li><span>🥇 Inspector Tanaka</span> <span class="final-score">23 pts</span></li>
+        <li><span>🥈 Inspector Kowalski</span> <span class="final-score">19 pts</span></li>
+        <li><span>🥉 Inspector Delgado</span> <span class="final-score">15 pts</span></li>
+        <li><span>Inspector Chen</span> <span class="final-score">14 pts</span></li>
+        <li><span>Inspector Moreau</span> <span class="final-score">11 pts</span></li>
+        <li><span>Inspector Okafor</span> <span class="final-score">7 pts</span></li>
+      </ul>
+      <button class="btn-new-match">New Match</button>
+    </div>
+  </div>
+  -->
+

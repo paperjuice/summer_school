@@ -1,0 +1,7 @@
+defmodule SummerWeb.PageController do
+  use SummerWeb, :controller
+
+  def home(conn, _params) do
+    render(conn, :home)
+  end
+end
