@@ -13,9 +13,14 @@
       <div class="bureau-subtitle">Postal Inspector Training Division</div>
     </div>
   </div>
+
+  
+  <!--
   <div class="match-timer">
-    <span>Match Time</span> 3:42
+  <span>Match Time</span> 3:42
   </div>
+  -->
+
 </header>
 
 <main class="game-layout">
@@ -26,13 +31,13 @@
       <div class="player-identity">
         <div class="player-avatar">MK</div>
         <div>
-          <div class="player-name">Inspector Kowalski</div>
+          <div class="player-name">Inspector Dragos</div>
           <div class="player-role">Senior Postal Officer</div>
         </div>
       </div>
       <div class="score-display">
         <span class="score-label">Score</span>
-        <span class="score-value">14</span>
+        <span class="score-value">{@score}</span>
         <span class="score-unit">pts</span>
       </div>
     </div>
@@ -45,63 +50,91 @@
       <span class="card-timer-seconds">7s</span>
     </div>
 
-    <div class="package-card">
-      <div class="card-header">
-        <div class="card-title-group">
-          <div class="card-title">Package Inspection Form</div>
-          <div class="card-id">PKG-2026-07-00842</div>
-        </div>
-        <div class="card-stamp">
-          <span class="card-stamp-text">Postage</span>
-          <span class="card-stamp-value">€4.50</span>
-          <span class="card-stamp-text">Paid</span>
-        </div>
-      </div>
+    <div class="card-reveal-wrapper" >
 
-      <div class="package-fields">
-        <div class="field">
-          <div class="field-label">Package Type</div>
-          <div class="field-value type-badge">
-            Fragile <span class="badge badge-fragile">Fragile</span>
+      <%= case @validation_result do %>
+        <% :correct -> %>
+          <div class="stamp-result" id={"card-#{@timestamp}"}>
+            <div class="stamp-mark approved">
+              <span class="stamp-label">Approved</span>
+              <span class="stamp-points">+1</span>
+            </div>
+          </div>
+
+        <% :incorrect -> %>
+          <div class="stamp-result" id={"card-#{@timestamp}"}>
+            <div class="stamp-mark rejected">
+              <span class="stamp-label">Rejected</span>
+              <span class="stamp-points">−1</span>
+            </div>
+          </div>
+        <% nil -> %>
+          <div></div>
+      <% end %>
+
+
+
+      <div class="package-card" }>
+        <div class="card-header">
+          <div class="card-title-group">
+            <div class="card-title">Package Inspection Form</div>
+            <div class="card-id">PKG-{@timestamp}</div>
+          </div>
+          <div class="card-stamp">
+            <span class="card-stamp-text">Postage</span>
+            <span class="card-stamp-value">€4.50</span>
+            <span class="card-stamp-text">Paid</span>
           </div>
         </div>
-        <div class="field">
-          <div class="field-label">Weight</div>
-          <div class="field-value">1,250g</div>
-        </div>
-        <div class="field">
-          <div class="field-label">Destination</div>
-          <div class="field-value">International</div>
-        </div>
-        <div class="field">
-          <div class="field-label">Shipping Class</div>
-          <div class="field-value">Express</div>
-        </div>
-        <div class="field">
-          <div class="field-label">Declared Value</div>
-          <div class="field-value">€85.00</div>
-        </div>
-        <div class="field">
-          <div class="field-label">Destination Country</div>
-          <div class="field-value">Japan</div>
-        </div>
-      </div>
 
-      <div class="package-checks">
-        <span class="check-tag has"><span class="check-dot"></span> Customs Form</span>
-        <span class="check-tag has"><span class="check-dot"></span> Insurance</span>
-        <span class="check-tag has"><span class="check-dot"></span> Fragile Sticker</span>
-      </div>
+        <div class="package-fields">
+          <div class="field">
+            <div class="field-label">Package Type</div>
+            <div class="field-value type-badge">
+              {capitalise(@package.type)}
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Weight</div>
+            <div class="field-value">{@package.weight}g</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Destination</div>
+            <div class="field-value">{capitalise(@package.destination)}</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Shipping Class</div>
+            <div class="field-value">{capitalise(@package.shipping_class)}</div>
+          </div>
+          <div class="field">
+            <div class="field-label">Declared Value</div>
+            <div class="field-value">{@package.declared_value}</div>
+          </div>
+        </div>
 
-      <div class="card-actions">
-        <button phx-click="decline" class="btn btn-decline">
-          <span class="btn-icon">✕</span> Decline
-        </button>
-        <button phx-click="approve" class="btn btn-approve">
-          <span class="btn-icon">✓</span> Approve
-        </button>
-      </div>
-      
+        <div class="package-checks">
+          <%= if @package.has_customs_form do %>
+            <span class="check-tag has"><span class="check-dot"></span> Customs Form</span>
+          <% end %>
+
+          <%= if @package.has_insurance do %>
+            <span class="check-tag has"><span class="check-dot"></span> Insurance</span>
+          <% end %>
+
+          <%= if @package.has_fragile_sticker do %>
+            <span class="check-tag has"><span class="check-dot"></span> Fragile Sticker</span>
+          <% end %>
+        </div>
+
+        <div class="card-actions">
+          <button phx-click="decline" class="btn btn-decline">
+            <span class="btn-icon">✕</span> Decline
+          </button>
+          <button phx-click="approve" class="btn btn-approve">
+            <span class="btn-icon">✓</span> Approve
+          </button>
+        </div>
+        
 <!--
         <div class="result-reveal correct">
           <div class="result-icon">✓</div>
@@ -121,6 +154,7 @@
           </div>
         </div>
         -->
+      </div>
     </div>
   </section>
   
@@ -231,6 +265,7 @@
     </ul>
   </div>
 </main>
+
 
 <!--
   <div class="match-end-overlay" style="display:flex">

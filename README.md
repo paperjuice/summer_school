@@ -25,6 +25,7 @@ has_insurance: true | false
 
 
 PLAN:
+--- Commit 1
 - personal introduction
 - PDQ expectation (don't use AI)
 * understanding syntax and how to read errors (focus on understanding how to read errors not on avoind making them)
@@ -36,5 +37,9 @@ PLAN:
 * float range (use recursion, dif between tail and non-tail)
 * accessing data from struct
 * validate function (with)
+* IO.inspect
+
+--- Commit 2
+* update function to match on specific elelements in the struct
 
 TODO: create tests for each chapter so that students can see if their code is fine

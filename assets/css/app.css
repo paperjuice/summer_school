@@ -564,3 +564,94 @@
 .card-hidden {
   display: none;
 }
+
+/* -- Stamp Reveal Container -- */
+
+.card-reveal-wrapper {
+  position: relative;
+}
+
+.stamp-result {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.package-card {
+  /* add these to your existing .package-card rules */
+  position: relative;
+  z-index: 2;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.package-card.resolved {
+  opacity: 0;
+  transform: translateY(-16px);
+  pointer-events: none;
+}
+
+/* -- Stamp Graphics -- */
+
+.stamp-mark {
+  display: flex;
+  border: 1px solid var(--paper-line);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  border-radius: 12px;
+  transform: rotate(-12deg);
+  opacity: 0.85;
+}
+
+.stamp-mark.approved {
+  position: absolute;
+  top: 100px;
+  border-color: var(--stamp-green);
+  color: var(--stamp-green);
+}
+
+.stamp-mark.rejected {
+  position: absolute;
+  top: 100px;
+  border-color: var(--stamp-red);
+  color: var(--stamp-red);
+}
+
+.stamp-label {
+  font-family: 'Special Elite', cursive;
+  font-size: 32px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  line-height: 1;
+}
+
+.stamp-points {
+  font-family: 'DM Mono', monospace;
+  font-size: 42px;
+  font-weight: 500;
+  line-height: 1;
+  margin-top: 6px;
+}
+
+.stamp-reason {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--ink-muted);
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+.stamp-saboteur {
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--stamp-red);
+}

@@ -23,7 +23,21 @@ defmodule Summer.Logic do
     }
   end
 
-  def validate_rule1(:letter, weight) do
+  def validate(package) do
+    with {:valid, _} <- validate_rule1(package),
+         {:valid, _} <- validate_rule2(package),
+         {:valid, _} <- validate_rule3(package),
+         {:valid, _} <- validate_rule4(package),
+         {:valid, _} <- validate_rule5(package),
+         {:valid, _} <- validate_rule6(package),
+         {:valid, _} <- validate_rule7(package),
+         {:valid, _} <- validate_rule8(package),
+         {:valid, _} <- validate_rule9(package) do
+      validate_rule10(package)
+    end
+  end
+
+  defp validate_rule1(%{type: :letter, weight: weight}) do
     if weight < 500 do
       {:valid, "rule1"}
     else
@@ -31,58 +45,69 @@ defmodule Summer.Logic do
     end
   end
 
-  def validate_rule1(_type, _weight), do: :valid
+  defp validate_rule1(_), do: {:valid, "rule1"}
 
-  def validate_rule2(:international, true), do: {:valid, "rule2"}
-  def validate_rule2(:international, false), do: {:invalid, "Internation requires customs form"}
-  def validate_rule2(_destination, _has_customs_form), do: :valid
+  defp validate_rule2(%{destination: :international, has_customs_form: true}),
+    do: {:valid, "rule2"}
 
-  def validate_rule3(:fragile, :standard), do: {:invalid, "Fragile can't use standard shipping"}
-  def validate_rule3(_type, _destination), do: {:valid, "rule3"}
+  defp validate_rule2(%{destination: :international, has_customs_form: false}),
+    do: {:invalid, "Internation requires customs form"}
 
-  def validate_rule4(:parcel, weight, :priority) do
+  defp validate_rule2(_), do: {:valid, "rule2"}
+
+  defp validate_rule3(%{type: :fragile, shipping_class: :standard}),
+    do: {:invalid, "Fragile can't use standard shipping"}
+
+  defp validate_rule3(_), do: {:valid, "rule3"}
+
+  defp validate_rule4(%{type: :parcel, weight: weight, shipping_class: :priority}) do
     if weight < 5000 do
       {:valid, "rule4"}
     else
-      {:invalid, "Parcel over 5000g #{weight} must use priority shipping"}
+      {:invalid, "Parcel over 5000g (#{weight}g) must use priority shipping"}
     end
   end
 
-  def validate_rule4(_type, _weight, _shipping_class), do: {:valid, "rule4"}
+  defp validate_rule4(_), do: {:valid, "rule4"}
 
-  def validate_rule5(declared_value, true) do
-    if declared_value <= 100 do
+  defp validate_rule5(%{declared_value: declared_value, has_insurance: has_insurance})
+       when declared_value > 100 do
+    if has_insurance do
       {:valid, "rule5"}
     else
       {:invalid, "insurance required for value over 100$ (#{declared_value})"}
     end
   end
 
-  def validate_rule5(_declared_value, false), do: {:valid, "rule5"}
+  defp validate_rule5(_), do: {:valid, "rule5"}
 
-  def validate_rule6(:fragile, true), do: {:valid, "rule6"}
+  defp validate_rule6(%{type: :fragile, has_fragile_sticker: true}), do: {:valid, "rule6"}
 
-  def validate_rule6(:fragile, false),
+  defp validate_rule6(%{type: :fragile, has_fragile_sticker: false}),
     do: {:invalid, "missing fragile sticker for fragile package"}
 
-  def validate_rule6(_type, _has_fragile_sticker), do: :valid
+  defp validate_rule6(_), do: {:valid, "rule6"}
 
-  def validate_rule7(:eu, shipping_class) when shipping_class in [:express, :priority],
-    do: {:valid, "rule7"}
+  defp validate_rule7(%{destination: :eu, shpping_class: shipping_class})
+       when shipping_class in [:express, :priority],
+       do: {:valid, "rule7"}
 
-  def validate_rule7(:international, shipping_class)
-      when shipping_class in [:express, :priority],
-      do: {:valid, "rule7"}
+  defp validate_rule7(%{destination: :international, shipping_class: shipping_class})
+       when shipping_class in [:express, :priority],
+       do: {:valid, "rule7"}
 
-  def validate_rule7(destination, shipping_class) when destination in [:eu, :international],
-    do: {:invalid, "#{destination} has wrong shipping class: #{shipping_class}"}
+  defp validate_rule7(%{destination: destination, shipping_class: shipping_class})
+       when destination in [:eu, :international],
+       do: {:invalid, "#{destination} has wrong shipping class: #{shipping_class}"}
 
-  def validate_rule7(_destination, _shipping_class), do: {:valid, "rule7"}
+  defp validate_rule7(_package), do: {:valid, "rule7"}
 
-  def validate_rule8(:letter, true), do: {:invalid, "letters can't have insurance"}
-  def validate_rule8(_type, _has_insurance), do: {:valid, "rule8"}
+  defp validate_rule8(%{type: :letter, has_insurance: true}),
+    do: {:invalid, "letters can't have insurance"}
 
-  def validate_rule9(:standard, :domestic, weight) do
+  defp validate_rule8(_package), do: {:valid, "rule8"}
+
+  defp validate_rule9(%{shipping_class: :standard, destination: :domestic, weight: weight}) do
     if weight < 2000 do
       {:valid, "rule9"}
     else
@@ -90,24 +115,26 @@ defmodule Summer.Logic do
     end
   end
 
-  def validate_rule9(_shipping_class, _destination, _weight), do: {:valid, "rule9"}
+  defp validate_rule9(_package), do: {:valid, "rule9"}
 
-  def validate_rule10(:fragile, :international, :priority, weight) do
-    if weight > 1000,
+  defp validate_rule10(%{
+         type: :fragile,
+         destination: :international,
+         shipping_class: shipping_class,
+         weight: weight
+       })
+       when weight > 1000 do
+    if shipping_class == :priority,
       do: {:valid, "rule10"},
-      else: {:invalid, "fragile internationla priority packages must be under 1000g"}
+      else: {:invalid, "fragile internationle packages over 1000g must use priority"}
   end
 
-  def validate_rule10(:fragile, :international, _shipping_class, _weight) do
-    {:invalid, "fragile internationla must be priority"}
-  end
-
-  def validate_rule10(type, destination, shipping_class, weight) do
+  defp validate_rule10(_package) do
     {:valid, "rule10"}
   end
 
-  def float_range do
-    10..2000
+  defp float_range do
+    10..4000
     |> Range.to_list()
     |> build_float_range([])
     |> Enum.reverse()
@@ -122,6 +149,6 @@ defmodule Summer.Logic do
     build_float_range(tl, new_acc)
   end
 
-  defp calculate_weight(:letter), do: Enum.random(1..999)
+  defp calculate_weight(:letter), do: Enum.random(1..600)
   defp calculate_weight(_), do: Enum.random(1..10000)
 end
