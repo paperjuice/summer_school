@@ -13,9 +13,8 @@
       <div class="bureau-subtitle">Postal Inspector Training Division</div>
     </div>
   </div>
-
   
-  <!--
+<!--
   <div class="match-timer">
   <span>Match Time</span> 3:42
   </div>
@@ -50,8 +49,7 @@
       <span class="card-timer-seconds">7s</span>
     </div>
 
-    <div class="card-reveal-wrapper" >
-
+    <div class="card-reveal-wrapper">
       <%= case @validation_result do %>
         <% :correct -> %>
           <div class="stamp-result" id={"card-#{@timestamp}"}>
@@ -60,7 +58,6 @@
               <span class="stamp-points">+1</span>
             </div>
           </div>
-
         <% :incorrect -> %>
           <div class="stamp-result" id={"card-#{@timestamp}"}>
             <div class="stamp-mark rejected">
@@ -71,8 +68,6 @@
         <% nil -> %>
           <div></div>
       <% end %>
-
-
 
       <div class="package-card" }>
         <div class="card-header">
@@ -265,7 +260,6 @@
     </ul>
   </div>
 </main>
-
 
 <!--
   <div class="match-end-overlay" style="display:flex">

@@ -23,18 +23,26 @@ defmodule Summer.Logic do
     }
   end
 
-  def validate(package) do
-    with {:valid, _} <- validate_rule1(package),
-         {:valid, _} <- validate_rule2(package),
-         {:valid, _} <- validate_rule3(package),
-         {:valid, _} <- validate_rule4(package),
-         {:valid, _} <- validate_rule5(package),
-         {:valid, _} <- validate_rule6(package),
-         {:valid, _} <- validate_rule7(package),
-         {:valid, _} <- validate_rule8(package),
-         {:valid, _} <- validate_rule9(package) do
-      validate_rule10(package)
-    end
+  def validate(package, rules_to_apply) do
+    [
+      rule1: &validate_rule1/1,
+      rule2: &validate_rule2/1,
+      rule3: &validate_rule3/1,
+      rule4: &validate_rule4/1,
+      rule5: &validate_rule5/1,
+      rule6: &validate_rule6/1,
+      rule7: &validate_rule7/1,
+      rule8: &validate_rule8/1,
+      rule9: &validate_rule9/1,
+      rule10: &validate_rule10/1
+    ]
+    |> Enum.filter(fn rule -> rule in rules_to_apply end)
+    |> Enum.reduce_while({:valid, "success"}, fn {_rule, func}, acc ->
+      case func.(package) do
+        {:valid, _} -> {:cont, acc}
+        {:invalid, msg} -> {:halt, {:invalid, msg}}
+      end
+    end)
   end
 
   defp validate_rule1(%{type: :letter, weight: weight}) do

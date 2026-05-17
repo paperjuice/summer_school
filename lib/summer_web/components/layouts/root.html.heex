@@ -38,9 +38,6 @@
   <body>
     {@inner_content}
     <script>
-
-
-
       window.addEventListener("phx:swipe-left", (e) => {
         const approveBtn = document.querySelector('.btn-approve');
         const declineBtn = document.querySelector('.btn-decline');
@@ -65,10 +62,6 @@
           }, { once: true});
       });
 
-
-
-
-
       window.addEventListener("phx:reset-package-card", (e) => {
       const packageCard = document.querySelector('.package-card');
 
@@ -86,9 +79,6 @@
         packageCard.style.transform = "scale(1)";
         });
       });
-
-
-
     </script>
   </body>
 </html>

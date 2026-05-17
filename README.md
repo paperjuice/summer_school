@@ -39,6 +39,8 @@ PLAN:
 * validate function (with)
 * IO.inspect
 
+* module attributes + keyword list + anonymous function
+
 --- Commit 2
 * update function to match on specific elelements in the struct
 
