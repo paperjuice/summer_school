@@ -31,8 +31,4 @@ defmodule SummerWeb.ConnCase do
     end
   end
 
-  setup tags do
-    Summer.DataCase.setup_sandbox(tags)
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
-  end
 end

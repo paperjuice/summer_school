@@ -7,10 +7,6 @@
 # General application configuration
 import Config
 
-config :summer,
-  ecto_repos: [Summer.Repo],
-  generators: [timestamp_type: :utc_datetime]
-
 # Configure the endpoint
 config :summer, SummerWeb.Endpoint,
   url: [host: "localhost"],

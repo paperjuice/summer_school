@@ -41,7 +41,22 @@ PLAN:
 
 * module attributes + keyword list + anonymous function
 
+* talk about function flow when starting the elixir App
+* Talk about Supervision (in the context of children and start_link)
+* GenServer (what does 'use' mean) [doc](https://hexdocs.pm/elixir/GenServer.html)
+* what is __MODULE__
+* call vs cast (show PID in cast parent and child)
+
+* Process.send_after (increase the rule count up to 5)
+* handle_info
+
+
 --- Commit 2
 * update function to match on specific elelements in the struct
 
 TODO: create tests for each chapter so that students can see if their code is fine
+
+BUGS:
+* aia cu eu or international needs express or smthig doesn t work
+* muta orice logica de pe FE to some other module
+* letters cannot have insurance

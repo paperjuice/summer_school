@@ -248,7 +248,7 @@
     }
 
     .card-timer-fill {
-      height: 100%; width: 70%;
+      height: 100%;
       background: linear-gradient(90deg, var(--stamp-green), var(--stamp-green-light));
       border-radius: 3px;
       transition: width 1s linear;

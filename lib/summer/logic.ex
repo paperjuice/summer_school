@@ -1,6 +1,19 @@
 defmodule Summer.Logic do
   alias Summer.Package
 
+  @desc_rules %{
+    rule1: "Letters must weigh under 500g.",
+    rule2: "International packages require a customs form.",
+    rule3: "Fragile packages cannot use standard shipping.",
+    rule4: "Parcels over 5000g must use priority shipping.",
+    rule5: "Declared value over 100€ requires insurance.",
+    rule6: "Fragile packages must have a fragile sticker.",
+    rule7: "EU and international packages must use express or priority.",
+    rule8: "Letters cannot have insurance.",
+    rule9: "Standard shipping is only available for domestic packages under 2000g.",
+    rule10: "Fragile international packages over 1000g must use priority."
+  }
+
   def generate_package do
     type = Enum.random([:letter, :parcel, :fragile])
     weight = calculate_weight(type)
@@ -36,12 +49,19 @@ defmodule Summer.Logic do
       rule9: &validate_rule9/1,
       rule10: &validate_rule10/1
     ]
-    |> Enum.filter(fn rule -> rule in rules_to_apply end)
+    |> Enum.filter(fn {rule, _} -> rule in rules_to_apply end)
     |> Enum.reduce_while({:valid, "success"}, fn {_rule, func}, acc ->
       case func.(package) do
         {:valid, _} -> {:cont, acc}
         {:invalid, msg} -> {:halt, {:invalid, msg}}
       end
+    end)
+  end
+
+  def descriptions_by_rules(rules) do
+    Enum.reduce(rules, [], fn rule, acc ->
+      desc = Map.get(@desc_rules, rule)
+      [desc | acc]
     end)
   end
 

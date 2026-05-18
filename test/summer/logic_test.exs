@@ -28,7 +28,7 @@ defmodule Summer.LogicTest do
         has_fragile_sticker: false
       }
 
-      actual = Logic.validate(package)
+      actual = Logic.validate(package, [:rule1])
       assert {:invalid, "Letter weights 500g, max 499g"} = actual
     end
 
@@ -44,7 +44,7 @@ defmodule Summer.LogicTest do
         has_fragile_sticker: false
       }
 
-      actual = Logic.validate(package)
+      actual = Logic.validate(package, [:rule2])
       assert {:invalid, "Internation requires customs form"} = actual
     end
 
@@ -60,7 +60,7 @@ defmodule Summer.LogicTest do
         has_fragile_sticker: false
       }
 
-      actual = Logic.validate(package)
+      actual = Logic.validate(package, [:rule3])
       assert {:invalid, "Fragile can't use standard shipping"} = actual
     end
 
@@ -77,7 +77,7 @@ defmodule Summer.LogicTest do
           has_fragile_sticker: false
         }
 
-      actual = Logic.validate(package)
+      actual = Logic.validate(package, [:rule4])
       assert {:invalid, "Parcel over 5000g (6000g) must use priority shipping"} = actual
     end
 
@@ -94,7 +94,7 @@ defmodule Summer.LogicTest do
           has_fragile_sticker: false
         }
 
-      actual = Logic.validate(package)
+      actual = Logic.validate(package, [:rule5])
       assert {:invalid, "insurance required for value over 100$ (186.5)"} = actual
     end
 
@@ -111,7 +111,7 @@ defmodule Summer.LogicTest do
           has_fragile_sticker: false
         }
 
-      actual = Logic.validate(package)
+      actual = Logic.validate(package, [:rule6])
       assert {:invalid, "missing fragile sticker for fragile package"} = actual
     end
 
@@ -128,7 +128,7 @@ defmodule Summer.LogicTest do
           has_fragile_sticker: true
         }
 
-      actual = Logic.validate(package)
+      actual = Logic.validate(package, [:rule7])
       assert {:invalid, "eu has wrong shipping class: standard"} = actual
     end
 
@@ -145,7 +145,7 @@ defmodule Summer.LogicTest do
           has_fragile_sticker: false
         }
 
-      actual = Logic.validate(package)
+      actual = Logic.validate(package, [:rule8])
       assert {:invalid, "letters can't have insurance"} = actual
     end
 
@@ -162,7 +162,7 @@ defmodule Summer.LogicTest do
           has_fragile_sticker: false
         }
 
-      actual = Logic.validate(package)
+      actual = Logic.validate(package, [:rule9])
 
       assert {:invalid, "standard shipping is only available for domestic package under 2000g"} =
                actual
@@ -181,7 +181,7 @@ defmodule Summer.LogicTest do
           has_fragile_sticker: true
         }
 
-      actual = Logic.validate(package)
+      actual = Logic.validate(package, [:rule10])
       assert {:invalid, "fragile internationle packages over 1000g must use priority"} = actual
     end
   end

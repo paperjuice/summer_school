@@ -2,13 +2,21 @@ defmodule SummerWeb.MainLive do
   use SummerWeb, :live_view
 
   alias Summer.Logic
+  alias Summer.State
 
-  @time_to_respond 1000
+  @time_to_respond 1_000
+  @time_to_new_rule 30_000
+  @total_game_time 180_000
 
   @impl true
   def mount(_params, _session, socket) do
     package = Logic.generate_package()
     timestamp = DateTime.utc_now() |> DateTime.to_unix()
+
+    active_rules = State.get_stored_random_rules()
+    rule_descriptions = Logic.descriptions_by_rules(active_rules)
+
+    Process.send_after(self(), :game_end, @total_game_time)
 
     new_socket =
       socket
@@ -17,6 +25,9 @@ defmodule SummerWeb.MainLive do
       |> assign(:timestamp, timestamp)
       |> assign(:validation_result, :correct)
       |> assign(:validation_msg, "")
+      |> assign(:rule_descriptions, rule_descriptions)
+      |> assign(:active_rules, active_rules)
+      |> assign(:game_ended?, false)
 
     {:ok, new_socket}
   end
@@ -35,14 +46,10 @@ defmodule SummerWeb.MainLive do
     {:noreply, new_socket}
   end
 
-  @impl true
-  def handle_info(:next_package, socket) do
-    package = Logic.generate_package()
-
+  def handle_info(:game_end, socket) do
     new_socket =
       socket
-      |> assign(:package, package)
-      |> push_event("reset-package-card", %{})
+      |> assign(:game_ended?, true)
 
     {:noreply, new_socket}
   end
@@ -54,9 +61,10 @@ defmodule SummerWeb.MainLive do
   defp validation(swipe_direction, expected, socket) do
     package = socket.assigns.package
     score = socket.assigns.score
+    active_rules = socket.assigns.active_rules
 
     {validation_result, validation_msg} =
-      Logic.validate(package, [])
+      Logic.validate(package, active_rules)
 
     decision =
       if validation_result == expected,
@@ -74,8 +82,6 @@ defmodule SummerWeb.MainLive do
       |> assign(:validation_msg, validation_msg)
       |> assign(:score, new_score)
       |> push_event(swipe_direction, %{})
-
-    Process.send_after(self(), :next_package, @time_to_respond)
 
     new_socket
   end

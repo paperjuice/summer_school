@@ -18,7 +18,6 @@ defmodule Summer.DataCase do
 
   using do
     quote do
-      alias Summer.Repo
 
       import Ecto
       import Ecto.Changeset
@@ -27,18 +26,6 @@ defmodule Summer.DataCase do
     end
   end
 
-  setup tags do
-    Summer.DataCase.setup_sandbox(tags)
-    :ok
-  end
-
-  @doc """
-  Sets up the sandbox based on the test tags.
-  """
-  def setup_sandbox(tags) do
-    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(Summer.Repo, shared: not tags[:async])
-    on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
-  end
 
   @doc """
   A helper that transforms changeset errors into a map of messages.
