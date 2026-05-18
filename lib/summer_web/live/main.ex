@@ -2,6 +2,7 @@ defmodule SummerWeb.MainLive do
   use SummerWeb, :live_view
 
   alias Summer.Logic
+  alias Summer.State
 
   @time_to_respond 1000
 
@@ -10,6 +11,9 @@ defmodule SummerWeb.MainLive do
     package = Logic.generate_package()
     timestamp = DateTime.utc_now() |> DateTime.to_unix()
 
+    active_rules = State.get_stored_random_rules()
+    rule_descriptions = Logic.descriptions_by_rules(active_rules)
+
     new_socket =
       socket
       |> assign(:package, package)
@@ -17,6 +21,8 @@ defmodule SummerWeb.MainLive do
       |> assign(:timestamp, timestamp)
       |> assign(:validation_result, :correct)
       |> assign(:validation_msg, "")
+      |> assign(:rule_descriptions, rule_descriptions)
+      |> assign(:active_rules, active_rules)
 
     {:ok, new_socket}
   end
@@ -54,9 +60,10 @@ defmodule SummerWeb.MainLive do
   defp validation(swipe_direction, expected, socket) do
     package = socket.assigns.package
     score = socket.assigns.score
+    active_rules = socket.assigns.active_rules
 
     {validation_result, validation_msg} =
-      Logic.validate(package, [])
+      Logic.validate(package, active_rules)
 
     decision =
       if validation_result == expected,

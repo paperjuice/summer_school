@@ -41,6 +41,7 @@
       </div>
     </div>
 
+    <!--
     <div class="card-timer-section">
       <span class="card-timer-label">Time remaining</span>
       <div class="card-timer-track">
@@ -48,6 +49,7 @@
       </div>
       <span class="card-timer-seconds">7s</span>
     </div>
+    -->
 
     <div class="card-reveal-wrapper">
       <%= case @validation_result do %>
@@ -158,41 +160,20 @@
     <div class="rules-header">
       <span class="rules-title">Postal Regulations</span>
     </div>
-    <div class="rules-list">
-      <div class="rule-item">
-        <span class="rule-number">01</span><span>Letters must weigh under 500g</span>
+
+    <% list = Enum.with_index(@rule_descriptions) %>
+
+    <%= for {desc, index} <- list do %>
+      <div class="rules-list">
+        <div class="rule-item">
+          <span class="rule-number">{index + 1}</span><span>{desc}</span>
+        </div>
       </div>
-      <div class="rule-item">
-        <span class="rule-number">02</span><span>International packages require a customs form</span>
-      </div>
-      <div class="rule-item">
-        <span class="rule-number">03</span><span>Fragile packages cannot use standard shipping</span>
-      </div>
-      <div class="rule-item">
-        <span class="rule-number">04</span><span>Parcels over 5,000g must use priority shipping</span>
-      </div>
-      <div class="rule-item">
-        <span class="rule-number">05</span><span>Declared value over €100 requires insurance</span>
-      </div>
-      <div class="rule-item">
-        <span class="rule-number">06</span><span>Fragile packages must have a fragile sticker</span>
-      </div>
-      <div class="rule-item">
-        <span class="rule-number">07</span><span>EU and international must use express or priority</span>
-      </div>
-      <div class="rule-item">
-        <span class="rule-number">08</span><span>Letters cannot have insurance</span>
-      </div>
-      <div class="rule-item">
-        <span class="rule-number">09</span><span>Standard shipping: domestic only, under 2,000g</span>
-      </div>
-      <div class="rule-item">
-        <span class="rule-number">10</span><span>Fragile international over 1,000g must use priority</span>
-      </div>
-    </div>
+    <% end %>
   </div>
   
 <!-- COLUMN 3: LEADERBOARD -->
+<!--
   <div class="leaderboard">
     <div class="leaderboard-header">
       <div class="leaderboard-title">Inspector Rankings</div>
@@ -259,6 +240,8 @@
       </li>
     </ul>
   </div>
+  -->
+
 </main>
 
 <!--

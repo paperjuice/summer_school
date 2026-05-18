@@ -41,6 +41,13 @@ PLAN:
 
 * module attributes + keyword list + anonymous function
 
+* talk about function flow when starting the elixir App
+* Talk about Supervision (in the context of children and start_link)
+* GenServer (what does 'use' mean) [doc](https://hexdocs.pm/elixir/GenServer.html)
+* what is __MODULE__
+* call vs cast (show PID in cast parent and child)
+
+
 --- Commit 2
 * update function to match on specific elelements in the struct
 
