@@ -36,7 +36,7 @@
     </script>
   </head>
   <body>
-      <.flash_group flash={@flash} />
+    <.flash_group flash={@flash} />
     {@inner_content}
     <script>
       window.addEventListener("phx:swipe-left", (e) => {
@@ -49,6 +49,14 @@
         packageCard.addEventListener('animationend', () => {
           packageCard.classList.add('card-hidden');
         }, { once: true });
+      });
+
+      window.addEventListener("phx:timer-tick", (e) => {
+        const fill = document.querySelector('.card-timer-fill');
+        const seconds = document.querySelector('.card-timer-seconds');
+
+        if (fill) fill.style.width = e.detail.width + "%";
+        if (seconds) seconds.textContent = e.detail.time + "s";
       });
 
       window.addEventListener("phx:swipe-right", (e) => {

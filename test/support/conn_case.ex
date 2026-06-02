@@ -30,5 +30,4 @@ defmodule SummerWeb.ConnCase do
       import SummerWeb.ConnCase
     end
   end
-
 end

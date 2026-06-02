@@ -18,14 +18,12 @@ defmodule Summer.DataCase do
 
   using do
     quote do
-
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
       import Summer.DataCase
     end
   end
-
 
   @doc """
   A helper that transforms changeset errors into a map of messages.
