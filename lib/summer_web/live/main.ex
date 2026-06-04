@@ -6,17 +6,17 @@ defmodule SummerWeb.MainLive do
 
   import SummerWeb.GameComponents
 
-  @time_to_respond 1_000
+  @next_package_delay_ms 1_000
 
   @impl true
   def mount(_params, _session, socket) do
     Phoenix.PubSub.subscribe(Summer.PubSub, "game_room")
 
-    package = Logic.generate_package()
+    package = Logic.random_package()
     timestamp = DateTime.utc_now() |> DateTime.to_unix()
 
-    active_rules = State.get_stored_random_rules()
-    rule_descriptions = Logic.descriptions_by_rules(active_rules)
+    active_rules = State.get_active_rules()
+    rule_descriptions = Logic.rule_descriptions(active_rules)
 
     new_socket =
       socket
@@ -34,8 +34,6 @@ defmodule SummerWeb.MainLive do
 
     {:ok, new_socket}
   end
-
-  @impl true
 
   @impl true
   def handle_event("decline", _params, socket) do
@@ -57,6 +55,32 @@ defmodule SummerWeb.MainLive do
     new_socket =
       socket
       |> assign(:local_player, local_player)
+
+    {:noreply, new_socket}
+  end
+
+  @impl true
+  def handle_event("new_match", _params, socket) do
+    :ok = State.reset_game()
+
+    package = Logic.random_package()
+    timestamp = DateTime.utc_now() |> DateTime.to_unix()
+    active_rules = State.get_active_rules()
+    rule_descriptions = Logic.rule_descriptions(active_rules)
+
+    new_socket =
+      socket
+      |> assign(:package, package)
+      |> assign(:score, 0)
+      |> assign(:timestamp, timestamp)
+      |> assign(:validation_result, :correct)
+      |> assign(:validation_msg, "")
+      |> assign(:rule_descriptions, rule_descriptions)
+      |> assign(:active_rules, active_rules)
+      |> assign(:game_state, :waiting)
+      |> assign(:game_time, 0)
+      |> assign(:player_list, [])
+      |> assign(:local_player, nil)
 
     {:noreply, new_socket}
   end
@@ -84,7 +108,7 @@ defmodule SummerWeb.MainLive do
 
   @impl true
   def handle_info(:next_package, socket) do
-    package = Logic.generate_package()
+    package = Logic.random_package()
 
     new_socket =
       socket
@@ -105,7 +129,7 @@ defmodule SummerWeb.MainLive do
 
   @impl true
   def handle_info({:tick_update, current_game_time}, socket) do
-    width = build_game_time_loading_bar(current_game_time)
+    width = timer_fill_percent(current_game_time)
 
     new_socket =
       socket
@@ -124,8 +148,8 @@ defmodule SummerWeb.MainLive do
 
   @impl true
   def handle_info(:update_rules, socket) do
-    active_rules = State.get_stored_random_rules()
-    rule_descriptions = Logic.descriptions_by_rules(active_rules)
+    active_rules = State.get_active_rules()
+    rule_descriptions = Logic.rule_descriptions(active_rules)
 
     new_socket =
       socket
@@ -144,7 +168,7 @@ defmodule SummerWeb.MainLive do
     {:noreply, new_socket}
   end
 
-  def build_game_time_loading_bar(game_time) do
+  def timer_fill_percent(game_time) do
     max_game_time = State.max_game_time()
     game_time / max_game_time * 100
   end
@@ -163,7 +187,7 @@ defmodule SummerWeb.MainLive do
       |> assign(:score, updated_player.score)
       |> push_event(swipe_direction, %{})
 
-    Process.send_after(self(), :next_package, @time_to_respond)
+    Process.send_after(self(), :next_package, @next_package_delay_ms)
 
     new_socket
   end

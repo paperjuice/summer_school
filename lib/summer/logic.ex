@@ -14,12 +14,12 @@ defmodule Summer.Logic do
     rule10: "Fragile international packages over 1000g must use priority."
   }
 
-  def generate_package do
+  def random_package do
     type = Enum.random([:letter, :parcel, :fragile])
     weight = calculate_weight(type)
     destination = Enum.random([:domestic, :eu, :international])
     shipping_class = Enum.random([:standard, :express, :priority])
-    declared_value = Enum.random(float_range())
+    declared_value = Enum.random(declared_value_range())
     has_fragile_sticker = Enum.random([true, false])
     has_customs_form = Enum.random([true, false])
     has_insurance = Enum.random([true, false])
@@ -36,7 +36,7 @@ defmodule Summer.Logic do
     }
   end
 
-  def validate(package, rules_to_apply) do
+  def inspect_package(package, rules_to_apply) do
     [
       rule1: &validate_rule1/1,
       rule2: &validate_rule2/1,
@@ -58,7 +58,7 @@ defmodule Summer.Logic do
     end)
   end
 
-  def descriptions_by_rules(rules) do
+  def rule_descriptions(rules) do
     Enum.reduce(rules, [], fn rule, acc ->
       desc = Map.get(@desc_rules, rule)
       [desc | acc]
@@ -116,7 +116,7 @@ defmodule Summer.Logic do
 
   defp validate_rule6(_), do: {:valid, "rule6"}
 
-  defp validate_rule7(%{destination: :eu, shpping_class: shipping_class})
+  defp validate_rule7(%{destination: :eu, shipping_class: shipping_class})
        when shipping_class in [:express, :priority],
        do: {:valid, "rule7"}
 
@@ -161,20 +161,20 @@ defmodule Summer.Logic do
     {:valid, "rule10"}
   end
 
-  defp float_range do
+  defp declared_value_range do
     10..4000
     |> Range.to_list()
-    |> build_float_range([])
+    |> build_declared_value_range([])
     |> Enum.reverse()
   end
 
-  defp build_float_range([], acc), do: acc
+  defp build_declared_value_range([], acc), do: acc
 
-  defp build_float_range([hd | tl], acc) do
+  defp build_declared_value_range([hd | tl], acc) do
     to_float = hd / 10
     new_acc = [to_float | acc]
 
-    build_float_range(tl, new_acc)
+    build_declared_value_range(tl, new_acc)
   end
 
   defp calculate_weight(:letter), do: Enum.random(1..600)

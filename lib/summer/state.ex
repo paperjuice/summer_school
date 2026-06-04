@@ -5,6 +5,9 @@ defmodule Summer.State do
   alias Summer.Logic
 
   @max_rules 5
+  @max_game_time 240
+  @update_rules_interval 30
+  @tick_interval 1_000
   @rules [
     :rule1,
     :rule2,
@@ -18,14 +21,39 @@ defmodule Summer.State do
     :rule10
   ]
 
+  @type t :: %__MODULE__{
+          active_rules:
+            list(
+              :rule1
+              | :rule2
+              | :rule3
+              | :rule4
+              | :rule5
+              | :rule6
+              | :rule7
+              | :rule8
+              | :rule9
+              | :rule10
+            ),
+          current_game_time: non_neg_integer(),
+          game_state: :in_progress | :ended | :waiting
+        }
+
   defstruct active_rules: [],
             current_game_time: 0,
             players: [],
-            # :in_progress | :ended
             game_state: :waiting
 
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, %__MODULE__{}, name: __MODULE__)
+  end
+
+  def get_active_rules do
+    GenServer.call(__MODULE__, :get_active_rules)
+  end
+
+  def reset_game do
+    GenServer.call(__MODULE__, :reset_game)
   end
 
   @impl true
@@ -105,7 +133,7 @@ defmodule Summer.State do
       Enum.split_with(player_list, fn player -> player.pid == pid end)
 
     {validation_result, validation_msg} =
-      Logic.validate(package, active_rules)
+      Logic.inspect_package(package, active_rules)
 
     decision =
       if validation_result == expected,
@@ -136,70 +164,67 @@ defmodule Summer.State do
 
   @impl true
   def handle_call(:gen_random_rule, _from, state) do
-    {new_state, new_rule} = do_gen_random_rule(state)
-
+    {new_state, new_rule} = maybe_add_rule(state)
     {:reply, new_rule, new_state}
   end
 
+  @impl true
   def handle_call(:get_active_rules, _from, state) do
-    active_rules = state.active_rules
-
-    {:reply, active_rules, state}
+    {:reply, state.active_rules, state}
   end
 
   @impl true
-  def handle_info(:tick, state) do
-    Process.send_after(self(), :tick, 1_000)
+  def handle_call(:reset_game, _from, _state) do
+    new_state = %__MODULE__{}
+    {:reply, :ok, new_state}
+  end
 
-    current_game_time = Map.get(state, :current_game_time)
+  @impl true
+  def handle_info(:tick, %__MODULE__{game_state: :ended} = state) do
+    {:noreply, state}
+  end
+
+  def handle_info(:tick, state) do
+    Process.send_after(self(), :tick, @tick_interval)
+
+    current_game_time = state.current_game_time
     Phoenix.PubSub.broadcast(Summer.PubSub, "game_room", {:tick_update, current_game_time})
 
     {state_with_new_rule, _new_rule} =
-      if rem(current_game_time, 30) == 0 do
+      if rem(current_game_time, @update_rules_interval) == 0 do
         Phoenix.PubSub.broadcast(Summer.PubSub, "game_room", :update_rules)
-        do_gen_random_rule(state)
+        maybe_add_rule(state)
       else
         {state, nil}
       end
 
     if current_game_time > max_game_time() do
       Phoenix.PubSub.broadcast(Summer.PubSub, "game_room", {:game_ended, :ended})
+
+      {:noreply,
+       %{state_with_new_rule | game_state: :ended, current_game_time: current_game_time + 1}}
+    else
+      {:noreply, %{state_with_new_rule | current_game_time: current_game_time + 1}}
     end
-
-    new_state =
-      Map.put(state_with_new_rule, :current_game_time, current_game_time + 1)
-
-    {:noreply, new_state}
   end
 
   # in seconds
-  def max_game_time, do: 240
+  def max_game_time, do: @max_game_time
 
-  defp init_rules(state) do
-    active_rules = state.active_rules
-
+  defp pick_and_add_rule(state) do
     new_rule =
       @rules
-      |> Enum.reject(fn rule -> rule in active_rules end)
+      |> Enum.reject(fn rule -> rule in state.active_rules end)
       |> Enum.random()
 
-    new_state =
-      Map.put(state, :active_rules, [new_rule | active_rules])
-
-    {new_state, new_rule}
+    {%{state | active_rules: [new_rule | state.active_rules]}, new_rule}
   end
 
-  defp can_gen_rule?(state) do
-    length = length(state.active_rules)
+  defp can_add_rule?(state), do: length(state.active_rules) < @max_rules
 
-    if length < @max_rules,
-      do: true,
-      else: false
-  end
-
-  defp do_gen_random_rule(state) do
-    if can_gen_rule?(state),
-      do: init_rules(state),
+  defp maybe_add_rule(state) do
+    if can_add_rule?(state),
+      do: pick_and_add_rule(state),
       else: {state, nil}
   end
 
