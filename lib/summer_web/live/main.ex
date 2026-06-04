@@ -4,6 +4,8 @@ defmodule SummerWeb.MainLive do
   alias Summer.Logic
   alias Summer.State
 
+  import SummerWeb.GameComponents
+
   @time_to_respond 1_000
 
   @impl true
@@ -140,10 +142,6 @@ defmodule SummerWeb.MainLive do
       |> assign(:game_state, game_state)
 
     {:noreply, new_socket}
-  end
-
-  def capitalise(term) do
-    String.capitalize("#{term}")
   end
 
   def build_game_time_loading_bar(game_time) do
