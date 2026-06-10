@@ -25,13 +25,23 @@ defmodule SummerWeb.MainLive do
       |> assign(:validation_msg, "")
       |> assign(:rule_descriptions, rule_descriptions)
       |> assign(:active_rules, active_rules)
-      |> assign(:game_ended?, false)
+      |> assign(:game_state, :waiting)
       |> assign(:game_time, 0)
+      |> assign(:player_list, [])
+      |> assign(:local_player, nil)
 
     {:ok, new_socket}
   end
 
   @impl true
+
+  @impl true
+  def handle_event("decline", _params, socket) do
+    new_socket = validation("swipe-left", :invalid, socket)
+
+    {:noreply, new_socket}
+  end
+
   def handle_event("approve", _params, socket) do
     new_socket = validation("swipe-right", :valid, socket)
 
@@ -39,8 +49,33 @@ defmodule SummerWeb.MainLive do
   end
 
   @impl true
-  def handle_event("decline", _params, socket) do
-    new_socket = validation("swipe-left", :invalid, socket)
+  def handle_event("join", %{"name" => name}, socket) do
+    local_player = State.store_player(name, self())
+
+    new_socket =
+      socket
+      |> assign(:local_player, local_player)
+
+    {:noreply, new_socket}
+  end
+
+  @impl true
+  def handle_event("ready", _params, socket) do
+    local_player = socket.assigns.local_player
+    {updated_local_player, _game_state} = State.player_ready(local_player.name)
+
+    new_socket =
+      socket
+      |> assign(:local_player, updated_local_player)
+
+    {:noreply, new_socket}
+  end
+
+  @impl true
+  def handle_info({:game_start, game_state}, socket) do
+    new_socket =
+      socket
+      |> assign(:game_state, game_state)
 
     {:noreply, new_socket}
   end
@@ -58,10 +93,10 @@ defmodule SummerWeb.MainLive do
   end
 
   @impl true
-  def handle_info(:game_end, socket) do
+  def handle_info({:game_end, game_state}, socket) do
     new_socket =
       socket
-      |> assign(:game_ended?, true)
+      |> assign(:game_state, game_state)
 
     {:noreply, new_socket}
   end
@@ -73,6 +108,14 @@ defmodule SummerWeb.MainLive do
     new_socket =
       socket
       |> push_event("timer-tick", %{time: current_game_time, width: width})
+
+    {:noreply, new_socket}
+  end
+
+  def handle_info({:update_player_list, updated_player_list}, socket) do
+    new_socket =
+      socket
+      |> assign(:player_list, updated_player_list)
 
     {:noreply, new_socket}
   end
@@ -91,10 +134,10 @@ defmodule SummerWeb.MainLive do
   end
 
   @impl true
-  def handle_info(:game_ended, socket) do
+  def handle_info({:game_ended, game_state}, socket) do
     new_socket =
       socket
-      |> assign(:game_ended?, true)
+      |> assign(:game_state, game_state)
 
     {:noreply, new_socket}
   end
@@ -110,31 +153,24 @@ defmodule SummerWeb.MainLive do
 
   defp validation(swipe_direction, expected, socket) do
     package = socket.assigns.package
-    score = socket.assigns.score
-    active_rules = socket.assigns.active_rules
 
-    {validation_result, validation_msg} =
-      Logic.validate(package, active_rules)
-
-    decision =
-      if validation_result == expected,
-        do: :correct,
-        else: :incorrect
-
-    new_score =
-      if decision == :correct,
-        do: score + 1,
-        else: max(score - 1, 0)
+    {updated_player, decision, validation_msg} =
+      State.update_player_score(self(), package, expected)
 
     new_socket =
       socket
       |> assign(:validation_result, decision)
       |> assign(:validation_msg, validation_msg)
-      |> assign(:score, new_score)
+      |> assign(:local_player, updated_player)
+      |> assign(:score, updated_player.score)
       |> push_event(swipe_direction, %{})
 
     Process.send_after(self(), :next_package, @time_to_respond)
 
     new_socket
+  end
+
+  def get_medal(place) do
+    Enum.at(["🥇", "🥈", "🥉"], place)
   end
 end

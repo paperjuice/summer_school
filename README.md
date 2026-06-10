@@ -1,5 +1,20 @@
 # Summer - 
 
+
+## Start the project
+
+You will need Elixir >1.15 and Erlang 27
+You can check installed versions with `iex --version`
+
+To start the project run:
+```
+iex -S mix phx.server
+```
+
+Browse to: http://localhost:9901/
+
+Multiple clients can connect to the game.
+
 ## Package info
 type: :letter | :parcel | :fragile
 weight: interger()
@@ -21,7 +36,6 @@ has_insurance: true | false
 8. Letters cannot have insurance. (type + has_insurance)
 9. Standard shipping is only available for domestic packages under 2000g. (shipping_class + destination + weight)
 10. Fragile international packages over 1000g must use priority. (destination + weight + shipping_class)
-
 
 
 PLAN:
@@ -54,9 +68,29 @@ PLAN:
 --- Commit 2
 * update function to match on specific elelements in the struct
 
+
+
+Next:
+* on mount save player in player list in GenServer.
+* broadcast player name to everyone player list
+* create player module, struct that contains player name, score
+* on score update, broadcast score & update player score
+
+---
+
+* create `/` and `/game-<guid>`
+* on `/` you can create loby or join + add user name
+* if you create 
+
+
+
+
+
+
 TODO: create tests for each chapter so that students can see if their code is fine
 
 BUGS:
 * aia cu eu or international needs express or smthig doesn t work
 * muta orice logica de pe FE to some other module
 * letters cannot have insurance
+

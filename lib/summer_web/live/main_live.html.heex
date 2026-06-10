@@ -18,111 +18,112 @@
 <main class="game-layout">
   
 <!-- COLUMN 1: CARD -->
-  <section class="inspection-area">
-    <div class="player-score-bar">
-      <div class="player-identity">
-        <div class="player-avatar">MK</div>
-        <div>
-          <div class="player-name">Inspector Dragos</div>
-          <div class="player-role">Senior Postal Officer</div>
+  <%= if @local_player  && @game_state == :in_progress do %>
+    <section class="inspection-area">
+      <div class="player-score-bar">
+        <div class="player-identity">
+          <div class="player-avatar">MK</div>
+          <div>
+            <div class="player-name">Inspector {@local_player.name}</div>
+            <div class="player-role">Senior Postal Officer</div>
+          </div>
+        </div>
+        <div class="score-display">
+          <span class="score-label">Score</span>
+          <span class="score-value">{@score}</span>
+          <span class="score-unit">pts</span>
         </div>
       </div>
-      <div class="score-display">
-        <span class="score-label">Score</span>
-        <span class="score-value">{@score}</span>
-        <span class="score-unit">pts</span>
+
+      <div class="card-timer-section">
+        <span class="card-timer-label">Match time remaining</span>
+        <div class="card-timer-track">
+          <div class="card-timer-fill" style="width: 100%;"></div>
+        </div>
+        <span class="card-timer-seconds">300s</span>
       </div>
-    </div>
 
-    <div class="card-timer-section">
-      <span class="card-timer-label">Match time remaining</span>
-      <div class="card-timer-track">
-        <div class="card-timer-fill" style="width: 100%;"></div>
-      </div>
-      <span class="card-timer-seconds">300s</span>
-    </div>
+      <div class="card-reveal-wrapper">
+        <%= case @validation_result do %>
+          <% :correct -> %>
+            <div class="stamp-result" id={"card-#{@timestamp}"}>
+              <div class="stamp-mark approved">
+                <span class="stamp-label">Approved</span>
+                <span class="stamp-points">+1</span>
+              </div>
+            </div>
+          <% :incorrect -> %>
+            <div class="stamp-result" id={"card-#{@timestamp}"}>
+              <div class="stamp-mark rejected">
+                <span class="stamp-label">Rejected</span>
+                <span class="stamp-points">−1</span>
+              </div>
+            </div>
+          <% nil -> %>
+            <div></div>
+        <% end %>
 
-    <div class="card-reveal-wrapper">
-      <%= case @validation_result do %>
-        <% :correct -> %>
-          <div class="stamp-result" id={"card-#{@timestamp}"}>
-            <div class="stamp-mark approved">
-              <span class="stamp-label">Approved</span>
-              <span class="stamp-points">+1</span>
+        <div class="package-card" }>
+          <div class="card-header">
+            <div class="card-title-group">
+              <div class="card-title">Package Inspection Form</div>
+              <div class="card-id">PKG-{@timestamp}</div>
+            </div>
+            <div class="card-stamp">
+              <span class="card-stamp-text">Postage</span>
+              <span class="card-stamp-value">€4.50</span>
+              <span class="card-stamp-text">Paid</span>
             </div>
           </div>
-        <% :incorrect -> %>
-          <div class="stamp-result" id={"card-#{@timestamp}"}>
-            <div class="stamp-mark rejected">
-              <span class="stamp-label">Rejected</span>
-              <span class="stamp-points">−1</span>
+
+          <div class="package-fields">
+            <div class="field">
+              <div class="field-label">Package Type</div>
+              <div class="field-value type-badge">
+                {capitalise(@package.type)}
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Weight</div>
+              <div class="field-value">{@package.weight}g</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Destination</div>
+              <div class="field-value">{capitalise(@package.destination)}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Shipping Class</div>
+              <div class="field-value">{capitalise(@package.shipping_class)}</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Declared Value</div>
+              <div class="field-value">{@package.declared_value}</div>
             </div>
           </div>
-        <% nil -> %>
-          <div></div>
-      <% end %>
 
-      <div class="package-card" }>
-        <div class="card-header">
-          <div class="card-title-group">
-            <div class="card-title">Package Inspection Form</div>
-            <div class="card-id">PKG-{@timestamp}</div>
-          </div>
-          <div class="card-stamp">
-            <span class="card-stamp-text">Postage</span>
-            <span class="card-stamp-value">€4.50</span>
-            <span class="card-stamp-text">Paid</span>
-          </div>
-        </div>
+          <div class="package-checks">
+            <%= if @package.has_customs_form do %>
+              <span class="check-tag has"><span class="check-dot"></span> Customs Form</span>
+            <% end %>
 
-        <div class="package-fields">
-          <div class="field">
-            <div class="field-label">Package Type</div>
-            <div class="field-value type-badge">
-              {capitalise(@package.type)}
-            </div>
-          </div>
-          <div class="field">
-            <div class="field-label">Weight</div>
-            <div class="field-value">{@package.weight}g</div>
-          </div>
-          <div class="field">
-            <div class="field-label">Destination</div>
-            <div class="field-value">{capitalise(@package.destination)}</div>
-          </div>
-          <div class="field">
-            <div class="field-label">Shipping Class</div>
-            <div class="field-value">{capitalise(@package.shipping_class)}</div>
-          </div>
-          <div class="field">
-            <div class="field-label">Declared Value</div>
-            <div class="field-value">{@package.declared_value}</div>
-          </div>
-        </div>
+            <%= if @package.has_insurance do %>
+              <span class="check-tag has"><span class="check-dot"></span> Insurance</span>
+            <% end %>
 
-        <div class="package-checks">
-          <%= if @package.has_customs_form do %>
-            <span class="check-tag has"><span class="check-dot"></span> Customs Form</span>
-          <% end %>
+            <%= if @package.has_fragile_sticker do %>
+              <span class="check-tag has"><span class="check-dot"></span> Fragile Sticker</span>
+            <% end %>
+          </div>
 
-          <%= if @package.has_insurance do %>
-            <span class="check-tag has"><span class="check-dot"></span> Insurance</span>
-          <% end %>
-
-          <%= if @package.has_fragile_sticker do %>
-            <span class="check-tag has"><span class="check-dot"></span> Fragile Sticker</span>
-          <% end %>
-        </div>
-
-        <div class="card-actions">
-          <button phx-click="decline" class="btn btn-decline">
-            <span class="btn-icon">✕</span> Decline
-          </button>
-          <button phx-click="approve" class="btn btn-approve">
-            <span class="btn-icon">✓</span> Approve
-          </button>
-        </div>
-        
+          <div class="card-actions">
+            <button phx-click="decline" class="btn btn-decline">
+              <span class="btn-icon">✕</span> Decline
+            </button>
+            <button phx-click="approve" class="btn btn-approve">
+              <span class="btn-icon">✓</span> Approve
+            </button>
+          </div>
+          
 <!--
         <div class="result-reveal correct">
           <div class="result-icon">✓</div>
@@ -132,6 +133,7 @@
           </div>
         </div>
         -->
+
         <!--
         <div class="result-reveal incorrect">
           <div class="result-icon">✕</div>
@@ -142,9 +144,49 @@
           </div>
         </div>
         -->
+        </div>
       </div>
+    </section>
+  <% else %>
+    <div class="ready-section">
+      <span class="ready-title">Report for Duty</span>
+
+      <%= if @local_player do %>
+        <.form for={%{}} phx-submit="ready">
+          <div class="ready-input-group">
+            <label class="player-name" for="inspector-name">{@local_player.name}</label>
+          </div>
+
+          <%= if @local_player.ready? do %>
+            ✓ Ready
+          <% else %>
+            <button class="btn">
+              Ready
+            </button>
+          <% end %>
+        </.form>
+      <% else %>
+        <.form for={%{}} phx-submit="join">
+          <div class="ready-input-group">
+            <label class="ready-label" for="inspector-name">Inspector Name</label>
+            <input
+              class="ready-input"
+              type="text"
+              id="inspector-name"
+              name="name"
+              placeholder="e.g. Inspector Wazowski"
+              value=""
+              autocomplete="off"
+            />
+          </div>
+
+          <button class="btn-ready">
+            Join
+          </button>
+        </.form>
+      <% end %>
     </div>
-  </section>
+  <% end %>
   
 <!-- COLUMN 2: RULES -->
   <div class="rules-reference">
@@ -164,93 +206,39 @@
   </div>
   
 <!-- COLUMN 3: LEADERBOARD -->
-<!-- TODO
   <div class="leaderboard">
     <div class="leaderboard-header">
       <div class="leaderboard-title">Inspector Rankings</div>
     </div>
+
     <ul class="leaderboard-list">
-      <li class="leaderboard-item">
-        <span class="rank rank-1">1</span>
-        <div class="lb-player-info">
-          <div class="lb-player-name">Inspector Tanaka</div>
-          <div class="lb-activity">
-            <span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot hot"></span><span class="lb-activity-dot hot"></span>
+      <%= for player <- @player_list do %>
+        <li class="leaderboard-item">
+          <span class="rank rank-1">1</span>
+          <div class="lb-player-info">
+            <div class="lb-player-name">{player.name}</div>
           </div>
-        </div>
-        <button class="btn-sabotage">Sabotage <span class="sabotage-cost">−1 pt</span></button>
-      </li>
-      <li class="leaderboard-item is-you">
-        <span class="rank rank-2">2</span>
-        <div class="lb-player-info">
-          <div class="lb-player-name">Inspector Kowalski <span class="you-tag">(you)</span></div>
-          <div class="lb-activity">
-            <span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span>
-          </div>
-        </div>
-      </li>
-      <li class="leaderboard-item">
-        <span class="rank rank-3">3</span>
-        <div class="lb-player-info">
-          <div class="lb-player-name">Inspector Delgado</div>
-          <div class="lb-activity">
-            <span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span>
-          </div>
-        </div>
-        <button class="btn-sabotage sent">Sent ✓</button>
-      </li>
-      <li class="leaderboard-item">
-        <span class="rank">4</span>
-        <div class="lb-player-info">
-          <div class="lb-player-name">Inspector Moreau</div>
-          <div class="lb-activity">
-            <span class="lb-activity-dot active"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span>
-          </div>
-        </div>
-        <button class="btn-sabotage">Sabotage <span class="sabotage-cost">−1 pt</span></button>
-      </li>
-      <li class="leaderboard-item">
-        <span class="rank">5</span>
-        <div class="lb-player-info">
-          <div class="lb-player-name">Inspector Chen</div>
-          <div class="lb-activity">
-            <span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot active"></span><span class="lb-activity-dot"></span>
-          </div>
-        </div>
-        <button class="btn-sabotage">Sabotage <span class="sabotage-cost">−1 pt</span></button>
-      </li>
-      <li class="leaderboard-item">
-        <span class="rank">6</span>
-        <div class="lb-player-info">
-          <div class="lb-player-name">Inspector Okafor</div>
-          <div class="lb-activity">
-            <span class="lb-activity-dot"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span><span class="lb-activity-dot"></span>
-          </div>
-        </div>
-        <button class="btn-sabotage">Sabotage <span class="sabotage-cost">−1 pt</span></button>
-      </li>
+          <div class="lb-player-score">{player.score}</div>
+        </li>
+      <% end %>
     </ul>
   </div>
-  -->
-
 </main>
 
 <!-- TODO: <pop up screen showing the total points of each player> -->
-<%= if @game_ended? do %>
+<%= if @game_state == :ended do %>
   <div class="match-end-overlay" style="display:flex">
     <div class="match-end-card">
       <div class="match-end-label">Match Complete</div>
       <div class="match-end-title">Final Results</div>
       <ul class="match-end-scores">
-        <li><span>FINAL SCORE</span> <span class="final-score">{@score} pts</span></li>
-        <!--
-          <li><span>🥇 Inspector Tanaka</span> <span class="final-score">23 pts</span></li>
-          <li><span>🥈 Inspector Kowalski</span> <span class="final-score">19 pts</span></li>
-          <li><span>🥉 Inspector Delgado</span> <span class="final-score">15 pts</span></li>
-          <li><span>Inspector Chen</span> <span class="final-score">14 pts</span></li>
-          <li><span>Inspector Moreau</span> <span class="final-score">11 pts</span></li>
-          <li><span>Inspector Okafor</span> <span class="final-score">7 pts</span></li>
-        -->
+        <% players_with_index = Enum.with_index(@player_list) %>
+        <%= for {player, index} <- players_with_index do %>
+          <li>
+            <span>{get_medal(index)} {player.name}</span>
+            <span class="final-score">{player.score} pts</span>
+          </li>
+        <% end %>
       </ul>
       <button class="btn-new-match">New Match</button>
     </div>
