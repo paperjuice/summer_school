@@ -15,7 +15,7 @@ defmodule SummerWeb.MainLive do
     package = Logic.generate_package()
     timestamp = DateTime.utc_now() |> DateTime.to_unix()
 
-    active_rules = State.get_stored_random_rules()
+    active_rules = State.get_active_rules()
     rule_descriptions = Logic.descriptions_by_rules(active_rules)
 
     new_socket =
@@ -50,7 +50,7 @@ defmodule SummerWeb.MainLive do
 
   @impl true
   def handle_event("join", %{"name" => name}, socket) do
-    local_player = State.store_player(name, self())
+    local_player = State.add_player(name, self())
 
     new_socket =
       socket
@@ -122,7 +122,7 @@ defmodule SummerWeb.MainLive do
 
   @impl true
   def handle_info(:update_rules, socket) do
-    active_rules = State.get_stored_random_rules()
+    active_rules = State.get_active_rules()
     rule_descriptions = Logic.descriptions_by_rules(active_rules)
 
     new_socket =
