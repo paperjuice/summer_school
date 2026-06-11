@@ -1,6 +1,8 @@
 defmodule SummerWeb.MainLive do
   use SummerWeb, :live_view
 
+  import SummerWeb.GameComponents
+
   alias Summer.Logic
   alias Summer.State
 
@@ -32,8 +34,6 @@ defmodule SummerWeb.MainLive do
 
     {:ok, new_socket}
   end
-
-  @impl true
 
   @impl true
   def handle_event("decline", _params, socket) do
@@ -142,10 +142,6 @@ defmodule SummerWeb.MainLive do
     {:noreply, new_socket}
   end
 
-  def capitalise(term) do
-    String.capitalize("#{term}")
-  end
-
   def build_game_time_loading_bar(game_time) do
     max_game_time = State.max_game_time()
     game_time / max_game_time * 100
@@ -168,9 +164,5 @@ defmodule SummerWeb.MainLive do
     Process.send_after(self(), :next_package, @time_to_respond)
 
     new_socket
-  end
-
-  def get_medal(place) do
-    Enum.at(["🥇", "🥈", "🥉"], place)
   end
 end
