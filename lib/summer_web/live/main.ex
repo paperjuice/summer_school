@@ -1,6 +1,8 @@
 defmodule SummerWeb.MainLive do
   use SummerWeb, :live_view
 
+  import SummerWeb.GameComponents
+
   alias Summer.Logic
   alias Summer.State
 
@@ -13,7 +15,7 @@ defmodule SummerWeb.MainLive do
     package = Logic.generate_package()
     timestamp = DateTime.utc_now() |> DateTime.to_unix()
 
-    active_rules = State.get_stored_random_rules()
+    active_rules = State.get_active_rules()
     rule_descriptions = Logic.descriptions_by_rules(active_rules)
 
     new_socket =
@@ -34,8 +36,6 @@ defmodule SummerWeb.MainLive do
   end
 
   @impl true
-
-  @impl true
   def handle_event("decline", _params, socket) do
     new_socket = validation("swipe-left", :invalid, socket)
 
@@ -50,7 +50,7 @@ defmodule SummerWeb.MainLive do
 
   @impl true
   def handle_event("join", %{"name" => name}, socket) do
-    local_player = State.store_player(name, self())
+    local_player = State.add_player(name, self())
 
     new_socket =
       socket
@@ -122,7 +122,7 @@ defmodule SummerWeb.MainLive do
 
   @impl true
   def handle_info(:update_rules, socket) do
-    active_rules = State.get_stored_random_rules()
+    active_rules = State.get_active_rules()
     rule_descriptions = Logic.descriptions_by_rules(active_rules)
 
     new_socket =
@@ -140,10 +140,6 @@ defmodule SummerWeb.MainLive do
       |> assign(:game_state, game_state)
 
     {:noreply, new_socket}
-  end
-
-  def capitalise(term) do
-    String.capitalize("#{term}")
   end
 
   def build_game_time_loading_bar(game_time) do
@@ -168,9 +164,5 @@ defmodule SummerWeb.MainLive do
     Process.send_after(self(), :next_package, @time_to_respond)
 
     new_socket
-  end
-
-  def get_medal(place) do
-    Enum.at(["🥇", "🥈", "🥉"], place)
   end
 end
